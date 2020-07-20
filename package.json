@@ -18,5 +18,8 @@
   "bin": {
     "flavour-serve": "scripts/serve.js",
     "flavour-init": "scripts/init.js"
+  },
+  "dependencies": {
+    "mustache": "^4.0.1"
   }
 }

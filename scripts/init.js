@@ -6,7 +6,7 @@ const fs = require('fs');
   if (!fs.existsSync(dir)) fs.mkdirSync(dir);
 });
 
-['README.md', 'index.js', 'flavour.config.js', '.gitignore'].forEach(filename => {
+['README.md', 'index.js', 'flavour.config.js', '.gitignore', 'pages/index.html'].forEach(filename => {
   if (!fs.existsSync(filename)) {
     fs.writeFileSync(filename, fs.readFileSync(`node_modules/flavour/data/${filename}`));
   }  
