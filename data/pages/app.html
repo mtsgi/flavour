@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="{{ config.lang }}">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ config.title }}</title>
+  <link rel="stylesheet" href="{{ config.style }}">
+</head>
+
+<body>
+  <header>
+    <h1>{{ config.title }}</h1>
+    <p>{{ config.description }}</p>
+  </header>
+  <main>
+    {{{ main }}}
+  </main>
+  <footer>
+    <p>{{ config.title }}</p>
+    <p>Built with <a href="https://github.com/mtsgi/flavour" target="_blank" rel="noopener noreferrer">Flavour</a>
+    </p>
+  </footer>
+</body>
+
+</html>

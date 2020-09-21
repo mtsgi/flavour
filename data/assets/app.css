@@ -1,0 +1,25 @@
+body {
+  margin: 0;
+  color: #222222;
+}
+header {
+  background: #fada9f;
+  padding: 12px;
+}
+header h1 {
+  margin: 0;
+}
+header p {
+  margin: 0;
+  color: #ab9469;
+}
+main {
+  padding: 0 16px;
+}
+footer {
+  padding: 8px;
+  font-size: 14px;
+  text-align: center;
+  background: #f0f0f0;
+  color: #a0a0a0;
+}

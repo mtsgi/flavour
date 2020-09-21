@@ -6,8 +6,17 @@ const fs = require('fs');
   if (!fs.existsSync(dir)) fs.mkdirSync(dir);
 });
 
-['README.md', 'index.js', 'flavour.config.js', '.gitignore'].forEach(filename => {
+[
+  'README.md',
+  'index.js',
+  'flavour.config.js',
+  'pages/index.html',
+  'pages/app.html',
+  'assets/app.css'
+].forEach(filename => {
   if (!fs.existsSync(filename)) {
-    fs.writeFileSync(filename, fs.readFileSync(`node_modules/flavour/data/${filename}`));
+    fs.writeFileSync(filename,
+      fs.readFileSync(`node_modules/flavour-wiki/data/${filename}`)
+    );
   }  
 });
