@@ -8,7 +8,7 @@ module.exports = class Flavour {
   constructor(config) {
     this.app = express();
     this.config = config;
-    this.server = this.app.listen(3000, function(){
+    this.server = this.app.listen(process.env.PORT || 3000, function () {
       console.log('Flavour is listening to PORT:' + this.address().port);
     });
     const vars = this;
