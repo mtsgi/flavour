@@ -17,7 +17,7 @@ const fs = require('fs');
 ].forEach(filename => {
   if (!fs.existsSync(filename)) {
     fs.writeFileSync(filename,
-      fs.readFileSync(`node_modules/flavour/data/${filename}`)
+      fs.readFileSync(`node_modules/flavour-wiki/data/${filename}`)
     );
   }  
 });
