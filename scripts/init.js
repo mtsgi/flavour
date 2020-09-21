@@ -10,7 +10,6 @@ const fs = require('fs');
   'README.md',
   'index.js',
   'flavour.config.js',
-  '.gitignore',
   'pages/index.html',
   'pages/app.html',
   'assets/app.css'
