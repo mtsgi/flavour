@@ -9,6 +9,7 @@ const fs = require('fs');
 [
   'README.md',
   'index.js',
+  'Procfile',
   'flavour.config.js',
   'pages/index.html',
   'pages/app.html',
