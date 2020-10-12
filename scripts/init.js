@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 
-['assets', 'pages'].forEach(dir => {
+['assets', 'pages', 'config', 'migrations'].forEach(dir => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir);
 });
 
@@ -10,10 +10,15 @@ const fs = require('fs');
   'README.md',
   'index.js',
   'Procfile',
+  '.gitignore',
+  '.env',
+  'docker-compose.yml',
   'flavour.config.js',
   'pages/index.html',
   'pages/app.html',
-  'assets/app.css'
+  'assets/app.css',
+  'config/config.json',
+  'migrations/0-create-article.js'
 ].forEach(filename => {
   if (!fs.existsSync(filename)) {
     fs.writeFileSync(filename,
@@ -21,3 +26,4 @@ const fs = require('fs');
     );
   }  
 });
+

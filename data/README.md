@@ -6,6 +6,8 @@ This wiki is built with Flavour.
 
 ```sh
 yarn run flavour-init
+docker-compose up -d
+npx sequelize-cli db:migrate
 ```
 
 ### Serve
