@@ -13,7 +13,7 @@ module.exports = class Flavour {
       console.log('Flavour is listening to PORT:' + this.address().port);
     });
     const vars = this;
-    const sequelize = new Sequelize('postgres:/root:password@localhost:5432/root');
+    const sequelize = new Sequelize('postgres:/root:password@localhost:5432/wiki_development');
     this.connect(sequelize);
 
     this.app.use('/assets', express.static('assets'));
