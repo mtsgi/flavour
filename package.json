@@ -19,7 +19,8 @@
     "flavour-init": "scripts/init.js"
   },
   "dependencies": {
-    "mustache": "^4.0.1",
-    "express": "^4.17.1"
+    "@prisma/cli": "^2.14.0",
+    "express": "^4.17.1",
+    "mustache": "^4.0.1"
   }
 }
