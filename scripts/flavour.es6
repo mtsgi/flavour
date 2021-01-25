@@ -6,6 +6,7 @@ import mustache from 'mustache';
 import marked from 'marked';
 import bodyParser from 'body-parser';
 import moment from 'moment';
+import twemoji from 'twemoji';
 
 module.exports = class Flavour {
   constructor(config) {
@@ -174,13 +175,15 @@ module.exports = class Flavour {
 
     const markdown = fs.readFileSync(`contents/${key}/${timestamp}.md`);
     const articleTemplate = fs.readFileSync('pages/article.html');
-    return mustache.render(articleTemplate.toString(), {
-      key,
-      info: revisionInfo,
-      formattedTime: Flavour.formatTime(timestamp),
-      body: marked(String(markdown), option.config.markdown),
-      revision: option.revision || false
-    });
+    return twemoji.parse(
+        mustache.render(articleTemplate.toString(), {
+        key,
+        info: revisionInfo,
+        formattedTime: Flavour.formatTime(timestamp),
+        body: marked(String(markdown), option.config.markdown),
+        revision: option.revision || false
+      })
+    );
   }
 
   static render(res, tmp, vars, option = {

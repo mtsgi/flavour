@@ -1,11 +1,11 @@
 {
   "name": "flavour-wiki",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Flavour framework",
   "main": "scripts/flavour.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "yarn run babel ./scripts/flavour.es6 --out-file ./scripts/flavour.js"
+    "build": "scripts/build.sh"
   },
   "author": "mtsgi",
   "license": "MIT",
@@ -16,7 +16,8 @@
     "babel-eslint": "^10.1.0",
     "eslint": "^7.9.0",
     "eslint-config-airbnb": "^18.2.0",
-    "eslint-plugin-import": "^2.22.0"
+    "eslint-plugin-import": "^2.22.0",
+    "node-sass": "^5.0.0"
   },
   "bin": {
     "flavour-init": "scripts/init.js",
@@ -27,6 +28,7 @@
     "express": "^4.17.1",
     "marked": "^1.2.7",
     "moment": "^2.29.1",
-    "mustache": "^4.0.1"
+    "mustache": "^4.0.1",
+    "twemoji": "^13.0.1"
   }
 }
