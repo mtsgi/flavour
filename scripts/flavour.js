@@ -13,6 +13,8 @@ var _bodyParser = _interopRequireDefault(require("body-parser"));
 
 var _moment = _interopRequireDefault(require("moment"));
 
+var _twemoji = _interopRequireDefault(require("twemoji"));
+
 var _class, _temp;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -219,13 +221,13 @@ module.exports = (_temp = _class = /*#__PURE__*/function () {
 
       var articleTemplate = _fs.default.readFileSync('pages/article.html');
 
-      return _mustache.default.render(articleTemplate.toString(), {
+      return _twemoji.default.parse(_mustache.default.render(articleTemplate.toString(), {
         key: key,
         info: revisionInfo,
         formattedTime: Flavour.formatTime(timestamp),
         body: (0, _marked.default)(String(markdown), option.config.markdown),
         revision: option.revision || false
-      });
+      }));
     }
   }, {
     key: "render",
