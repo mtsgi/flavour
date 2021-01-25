@@ -1,0 +1,13 @@
+<h1>{{ title }}</h1>
+
+<form method="POST" action="{{ action }}" class="form">
+  <label for="key">キー</label>
+  <input type="text" name="key" value="{{ article.key }}">
+  <br />
+  <label for="title">タイトル</label>
+  <input type="text" name="title" value="{{ article.title }}">
+  <br />
+  <label for="body">本文</label>
+  <textarea name="body">{{ article.body }}</textarea>
+  <button>{{ buttonLabel }}</button>
+</form>

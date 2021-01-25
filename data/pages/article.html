@@ -1,0 +1,16 @@
+{{ #revision }}
+  <div>
+    これは過去のリビジョンです。
+    <a href="/{{ key }}">最新に戻る</a>
+  </div>
+{{ /revision }}
+
+<h1>{{ info.title }}</h1>
+
+<a href="/edit/{{ key }}">編集</a>
+<a href="/revision/{{ key }}">リビジョン</a>
+更新：{{ formattedTime }}
+
+<hr />
+
+{{{ body }}}

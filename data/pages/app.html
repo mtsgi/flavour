@@ -13,9 +13,17 @@
     <h1>{{ config.title }}</h1>
     <p>{{ config.description }}</p>
   </header>
+
+  <nav>
+    <a href="/">ホーム</a>
+    <a href="/list">記事一覧</a>
+    <a href="/new">新規作成</a>
+  </nav>
+
   <main>
     {{{ main }}}
   </main>
+
   <footer>
     <p>{{ config.title }}</p>
     <p>Built with <a href="https://github.com/mtsgi/flavour" target="_blank" rel="noopener noreferrer">Flavour</a>

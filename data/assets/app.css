@@ -2,6 +2,7 @@ body {
   margin: 0;
   color: #222222;
 }
+
 header {
   background: #fada9f;
   padding: 12px;
@@ -13,9 +14,28 @@ header p {
   margin: 0;
   color: #ab9469;
 }
-main {
-  padding: 0 16px;
+
+nav {
+  background: #f0f0f0;
+  padding: 12px;
 }
+nav a {
+  color: #222222;
+  margin-right: 8px;
+}
+
+main {
+  padding: 0 16px 16px 16px;
+}
+
+a {
+  color: #2072c4;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
 footer {
   padding: 8px;
   font-size: 14px;

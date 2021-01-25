@@ -1,0 +1,13 @@
+<h1>{{ key }}のリビジョン</h1>
+
+<ul>
+  {{ #revisions }}
+    <li>
+      タイトル：<a href="/revision/{{ key }}/{{ time }}">{{ title }}</a>
+      <br />
+      更新日時：{{ time }}
+      <br />
+      更新者：{{ ipaddr }}
+    </li>
+  {{ /revisions }}
+</ul>

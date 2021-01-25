@@ -1,8 +1,15 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
+const force = false;
 
-['assets', 'pages'].forEach(dir => {
+[
+  'assets',
+  'pages',
+  'contents',
+  'contents/home',
+  'contents/about'
+].forEach(dir => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir);
 });
 
@@ -11,13 +18,27 @@ const fs = require('fs');
   'index.js',
   'Procfile',
   'flavour.config.js',
-  'pages/index.html',
   'pages/app.html',
-  'assets/app.css'
+  'pages/article.html',
+  'pages/error.html',
+  'pages/notfound.html',
+  'pages/list.html',
+  'pages/form.html',
+  'pages/revision.html',
+  'assets/app.css',
+  'contents/index.json',
+  'contents/home/1.md',
+  'contents/about/1.md'
 ].forEach(filename => {
-  if (!fs.existsSync(filename)) {
+  if (force || !fs.existsSync(filename)) {
     fs.writeFileSync(filename,
       fs.readFileSync(`node_modules/flavour-wiki/data/${filename}`)
     );
-  }  
+  }
 });
+
+if (force || !fs.existsSync('.gitignore')) {
+  fs.writeFileSync('.gitignore',
+    fs.readFileSync('node_modules/flavour-wiki/data/gitignore.txt')
+  );
+}
