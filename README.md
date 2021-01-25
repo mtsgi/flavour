@@ -1,5 +1,7 @@
 ![Flavour](resources/banner.png "Flavour | The Easiest Wiki System")
 
+### Getting Started
+
 ```sh
 yarn add flavour-wiki
 ```
@@ -12,4 +14,4 @@ yarn run flavour-init
 node index.js
 ```
 
-=> `https://localhost:3000/`
+=> http://localhost:3000/

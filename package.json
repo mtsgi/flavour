@@ -15,7 +15,7 @@
     "eslint-plugin-import": "^2.22.0"
   },
   "bin": {
-    "flavour-serve": "scripts/serve.js",
+    "flavour-serve": "node index.js",
     "flavour-init": "scripts/init.js"
   },
   "dependencies": {

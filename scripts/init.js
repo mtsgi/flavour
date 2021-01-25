@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 
-['assets', 'pages'].forEach(dir => {
+['assets', 'pages', 'contents', 'contents/home'].forEach(dir => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir);
 });
 
@@ -11,9 +11,12 @@ const fs = require('fs');
   'index.js',
   'Procfile',
   'flavour.config.js',
-  'pages/index.html',
   'pages/app.html',
-  'assets/app.css'
+  'pages/article.html',
+  'pages/notfound.html',
+  'assets/app.css',
+  'contents/index.json',
+  'contents/home/1.md'
 ].forEach(filename => {
   if (!fs.existsSync(filename)) {
     fs.writeFileSync(filename,
