@@ -19,7 +19,8 @@
     "flavour-init": "scripts/init.js"
   },
   "dependencies": {
-    "mustache": "^4.0.1",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "marked": "^1.2.7",
+    "mustache": "^4.0.1"
   }
 }

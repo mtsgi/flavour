@@ -28,6 +28,14 @@ main {
   padding: 0 16px 16px 16px;
 }
 
+a {
+  color: #2072c4;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
 footer {
   padding: 8px;
   font-size: 14px;

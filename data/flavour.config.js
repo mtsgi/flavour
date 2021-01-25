@@ -3,4 +3,8 @@ module.exports = {
   lang: 'ja',
   description: 'This is sample wiki of "Flavour".',
   style: '/assets/app.css',
+  markdown: {
+    breaks: true,
+    gfm: true
+  }
 };
