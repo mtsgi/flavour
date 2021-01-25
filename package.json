@@ -4,19 +4,24 @@
   "description": "Flavour framework",
   "main": "scripts/flavour.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "yarn run babel ./scripts/flavour.es6 --out-file ./scripts/flavour.js"
   },
   "author": "mtsgi",
   "license": "MIT",
   "devDependencies": {
+    "@babel/cli": "^7.12.10",
+    "@babel/core": "^7.12.10",
+    "@babel/plugin-transform-spread": "^7.12.1",
+    "@babel/preset-env": "^7.12.11",
     "babel-eslint": "^10.1.0",
     "eslint": "^7.9.0",
     "eslint-config-airbnb": "^18.2.0",
     "eslint-plugin-import": "^2.22.0"
   },
   "bin": {
-    "flavour-serve": "node index.js",
-    "flavour-init": "scripts/init.js"
+    "flavour-init": "scripts/init.js",
+    "flavour-serve": "scripts/serve.sh"
   },
   "dependencies": {
     "express": "^4.17.1",
