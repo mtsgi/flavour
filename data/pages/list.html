@@ -3,13 +3,13 @@
 <ul>
   {{ #articleList }}
     <li>
-      記事：<a href="./{{ key }}">{{ title }}</a>
+      記事：<a href="/{{ key }}">{{ title }}</a>
       <br />
       最終更新：{{ lastModified }}
       <br />
       タグ：
       {{ #tags }}
-        <a href="./tag?q={{ . }}">{{ . }}</a>
+        <a href="/tag?q={{ . }}">{{ . }}</a>
       {{ /tags }}
     </li>
   {{ /articleList }}

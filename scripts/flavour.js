@@ -74,7 +74,7 @@ module.exports = (_temp = _class = /*#__PURE__*/function () {
       var template = _mustache.default.render(formTemplate.toString(), {
         title: _this.config.dict.newArticle || 'New article',
         buttonLabel: _this.config.dict.newArticleLabel || 'Create',
-        action: './new',
+        action: '/new',
         article: {
           key: req.query.key || 'key',
           title: _this.config.dict.defaultArticleTitle || 'Article Title',
@@ -82,7 +82,9 @@ module.exports = (_temp = _class = /*#__PURE__*/function () {
         }
       });
 
-      Flavour.render(res, template, _objectSpread(_objectSpread({}, vars), req));
+      Flavour.render(res, template, _objectSpread(_objectSpread({}, vars), req), {
+        rerender: false
+      });
     });
     this.app.post('/new', function (req, res) {
       res.setHeader('Content-Type', 'text/plain');
@@ -111,11 +113,11 @@ module.exports = (_temp = _class = /*#__PURE__*/function () {
 
         _fs.default.writeFileSync("contents/index.json", JSON.stringify(indexObject, null, 2));
 
-        res.redirect("./".concat(req.body.key));
+        res.redirect("/".concat(req.body.key));
       }
     });
-    this.app.get('/edit', function (req, res) {
-      var key = req.query.key;
+    this.app.get('/edit/:key', function (req, res) {
+      var key = req.params.key;
       var indexObject = JSON.parse(_fs.default.readFileSync('contents/index.json'));
       var articleInfo = indexObject[key];
       if (!articleInfo) Flavour.renderError(res, "".concat(params.key, " is not found."));
@@ -125,7 +127,7 @@ module.exports = (_temp = _class = /*#__PURE__*/function () {
       var template = _mustache.default.render(formTemplate.toString(), {
         title: _this.config.dict.editArticle || 'Edit article',
         buttonLabel: _this.config.dict.editArticleLabel || 'Update',
-        action: './edit',
+        action: '/edit',
         editMode: true,
         article: {
           key: key,
@@ -134,6 +136,60 @@ module.exports = (_temp = _class = /*#__PURE__*/function () {
         }
       });
 
+      Flavour.render(res, template, _objectSpread(_objectSpread({}, vars), req), {
+        rerender: false
+      });
+    });
+    this.app.post('/edit', function (req, res) {
+      res.setHeader('Content-Type', 'text/plain');
+      var params = req.body;
+      var indexObject = JSON.parse(_fs.default.readFileSync('contents/index.json'));
+
+      if (!indexObject[params.key]) {
+        Flavour.renderError(res, "".concat(params.key, " is not found."));
+      } else {
+        var time = (0, _moment.default)().unix();
+        indexObject[params.key] = _objectSpread(_objectSpread({}, indexObject[params.key]), {}, {
+          title: params.title,
+          lastModified: time
+        });
+        indexObject[params.key].revisions.push({
+          title: params.title,
+          time: time,
+          ipaddr: req.ip
+        });
+
+        _fs.default.writeFileSync("contents/".concat(params.key, "/").concat(time, ".md"), params.body);
+
+        _fs.default.writeFileSync("contents/index.json", JSON.stringify(indexObject, null, 2));
+
+        res.redirect("/".concat(req.body.key));
+      }
+    });
+    this.app.get('/revision/:key', function (req, res) {
+      var key = req.params.key;
+      var indexObject = JSON.parse(_fs.default.readFileSync('contents/index.json'));
+      var articleInfo = indexObject[key];
+      if (!articleInfo) Flavour.renderError(res, "".concat(params.key, " is not found."));
+
+      var pageTemplate = _fs.default.readFileSync('pages/revision.html');
+
+      var template = _mustache.default.render(pageTemplate.toString(), _objectSpread({
+        key: key
+      }, articleInfo));
+
+      Flavour.render(res, template, _objectSpread(_objectSpread({}, vars), req));
+    });
+    this.app.get('/revision/:key/:timestamp', function (req, res) {
+      var key = req.params.key;
+      var timestamp = req.params.timestamp;
+      var indexObject = JSON.parse(_fs.default.readFileSync('contents/index.json'));
+      var articleInfo = indexObject[key];
+      if (!articleInfo) Flavour.renderError(res, "".concat(params.key, " is not found."));
+      var template = Flavour.getTemplate(req.params.key, {
+        config: _this.config,
+        revision: timestamp
+      });
       Flavour.render(res, template, _objectSpread(_objectSpread({}, vars), req));
     });
     this.app.get('/:key', function (req, res) {
@@ -147,27 +203,37 @@ module.exports = (_temp = _class = /*#__PURE__*/function () {
   _createClass(Flavour, null, [{
     key: "getTemplate",
     value: function getTemplate(key) {
-      var _option$config;
-
-      var option = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var option = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {
+        config: {},
+        revision: null
+      };
       var indexObject = JSON.parse(_fs.default.readFileSync('contents/index.json'));
       var articleInfo = indexObject[key];
       if (!articleInfo) return _fs.default.readFileSync('pages/notfound.html');
-      articleInfo.key = key;
+      var timestamp = option.revision || articleInfo['lastModified'];
+      var revisionInfo = articleInfo.revisions.find(function (r) {
+        return String(r.time) === String(timestamp);
+      });
 
-      var markdown = _fs.default.readFileSync("contents/".concat(key, "/").concat(articleInfo['lastModified'], ".md"));
+      var markdown = _fs.default.readFileSync("contents/".concat(key, "/").concat(timestamp, ".md"));
 
       var articleTemplate = _fs.default.readFileSync('pages/article.html');
 
       return _mustache.default.render(articleTemplate.toString(), {
-        info: articleInfo,
-        body: (0, _marked.default)(String(markdown), (_option$config = option.config) === null || _option$config === void 0 ? void 0 : _option$config.markdown)
+        key: key,
+        info: revisionInfo,
+        formattedTime: Flavour.formatTime(timestamp),
+        body: (0, _marked.default)(String(markdown), option.config.markdown),
+        revision: option.revision || false
       });
     }
   }, {
     key: "render",
     value: function render(res, tmp, vars) {
-      var pageTemplate = _mustache.default.render(tmp.toString(), _objectSpread(_objectSpread({}, res), vars));
+      var option = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {
+        rerender: true
+      };
+      var pageTemplate = option.rerender ? _mustache.default.render(tmp.toString(), _objectSpread(_objectSpread({}, res), vars)) : tmp.toString();
 
       var appTemplate = _fs.default.readFileSync('pages/app.html');
 
@@ -185,7 +251,7 @@ module.exports = (_temp = _class = /*#__PURE__*/function () {
   }, {
     key: "formatTime",
     value: function formatTime(time) {
-      return (0, _moment.default)(time).format("YYYY-MM-DD HH:mm:ss Z");
+      return _moment.default.unix(time).format("YYYY-MM-DD HH:mm:ss Z");
     }
   }]);
 

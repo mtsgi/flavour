@@ -42,14 +42,14 @@ module.exports = class Flavour {
       const template = mustache.render(formTemplate.toString(), {
         title: this.config.dict.newArticle || 'New article',
         buttonLabel: this.config.dict.newArticleLabel || 'Create',
-        action: './new',
+        action: '/new',
         article: {
           key: req.query.key || 'key',
           title: this.config.dict.defaultArticleTitle || 'Article Title',
           body: this.config.dict.defaultArticleBody || '*Write here body of the article*'
         }
       });
-      Flavour.render(res, template, { ...vars, ...req });
+      Flavour.render(res, template, { ...vars, ...req }, { rerender: false });
     });
 
     this.app.post('/new', (req, res) => {
@@ -75,16 +75,16 @@ module.exports = class Flavour {
             }
           ],
           tags: []
-        }
+        };
         if (!fs.existsSync(`contents/${params.key}`)) fs.mkdirSync(`contents/${params.key}`);
         fs.writeFileSync(`contents/${params.key}/${time}.md`, params.body);
         fs.writeFileSync("contents/index.json", JSON.stringify(indexObject, null, 2));
-        res.redirect(`./${req.body.key}`);
+        res.redirect(`/${req.body.key}`);
       }
     });
 
-    this.app.get('/edit', (req, res) => {
-      const key = req.query.key;
+    this.app.get('/edit/:key', (req, res) => {
+      const key = req.params.key;
       const indexObject = JSON.parse(fs.readFileSync('contents/index.json'));
       const articleInfo = indexObject[key];
       if (!articleInfo) Flavour.renderError(res, `${params.key} is not found.`);
@@ -93,13 +93,65 @@ module.exports = class Flavour {
       const template = mustache.render(formTemplate.toString(), {
         title: this.config.dict.editArticle || 'Edit article',
         buttonLabel: this.config.dict.editArticleLabel || 'Update',
-        action: './edit',
+        action: '/edit',
         editMode: true,
         article: {
           key,
           title: articleInfo.title,
           body: fs.readFileSync(`contents/${key}/${articleInfo['lastModified']}.md`)
         }
+      });
+      Flavour.render(res, template, { ...vars, ...req }, { rerender: false });
+    });
+
+    this.app.post('/edit', (req, res) => {
+      res.setHeader('Content-Type', 'text/plain');
+      const params = req.body;
+      const indexObject = JSON.parse(fs.readFileSync('contents/index.json'));
+      if (!indexObject[params.key]) {
+        Flavour.renderError(res, `${params.key} is not found.`);
+      }
+      else {
+        const time = moment().unix();
+        indexObject[params.key] = {
+          ...indexObject[params.key],
+          title: params.title,
+          lastModified: time
+        };
+        indexObject[params.key].revisions.push({
+          title: params.title,
+          time,
+          ipaddr: req.ip
+        })
+        fs.writeFileSync(`contents/${params.key}/${time}.md`, params.body);
+        fs.writeFileSync("contents/index.json", JSON.stringify(indexObject, null, 2));
+        res.redirect(`/${req.body.key}`);
+      }
+    });
+
+    this.app.get('/revision/:key', (req, res) => {
+      const key = req.params.key;
+      const indexObject = JSON.parse(fs.readFileSync('contents/index.json'));
+      const articleInfo = indexObject[key];
+      if (!articleInfo) Flavour.renderError(res, `${params.key} is not found.`);
+      const pageTemplate = fs.readFileSync('pages/revision.html');
+      const template = mustache.render(pageTemplate.toString(), {
+        key,
+        ...articleInfo
+      });
+      Flavour.render(res, template, { ...vars, ...req });
+    });
+
+    this.app.get('/revision/:key/:timestamp', (req, res) => {
+      const key = req.params.key;
+      const timestamp = req.params.timestamp;
+      const indexObject = JSON.parse(fs.readFileSync('contents/index.json'));
+      const articleInfo = indexObject[key];
+      if (!articleInfo) Flavour.renderError(res, `${params.key} is not found.`);
+      
+      const template = Flavour.getTemplate(req.params.key, {
+        config: this.config,
+        revision: timestamp
       });
       Flavour.render(res, template, { ...vars, ...req });
     });
@@ -110,22 +162,31 @@ module.exports = class Flavour {
     });
   }
 
-  static getTemplate(key, option = {}) {
+  static getTemplate(key, option = {
+    config: {},
+    revision: null
+  }) {
     const indexObject = JSON.parse(fs.readFileSync('contents/index.json'));
     const articleInfo = indexObject[key];
     if (!articleInfo) return fs.readFileSync('pages/notfound.html');
-    articleInfo.key = key;
-    const markdown = fs.readFileSync(`contents/${key}/${articleInfo['lastModified']}.md`);
+    const timestamp = option.revision || articleInfo['lastModified'];
+    const revisionInfo = articleInfo.revisions.find(r => String(r.time) === String(timestamp));
 
+    const markdown = fs.readFileSync(`contents/${key}/${timestamp}.md`);
     const articleTemplate = fs.readFileSync('pages/article.html');
     return mustache.render(articleTemplate.toString(), {
-      info: articleInfo,
-      body: marked(String(markdown), option.config?.markdown)
+      key,
+      info: revisionInfo,
+      formattedTime: Flavour.formatTime(timestamp),
+      body: marked(String(markdown), option.config.markdown),
+      revision: option.revision || false
     });
   }
 
-  static render(res, tmp, vars) {
-    const pageTemplate = mustache.render(tmp.toString(), { ...res, ...vars });
+  static render(res, tmp, vars, option = {
+    rerender: true
+  }) {
+    const pageTemplate = option.rerender ? mustache.render(tmp.toString(), { ...res, ...vars }) : tmp.toString();
     const appTemplate = fs.readFileSync('pages/app.html');
     const renderTemplate = mustache.render(appTemplate.toString(), { ...res, ...vars, main: pageTemplate });
     res.send(renderTemplate);
@@ -136,7 +197,7 @@ module.exports = class Flavour {
   }
 
   static formatTime(time) {
-    return moment(time).format("YYYY-MM-DD HH:mm:ss Z");
+    return moment.unix(time).format("YYYY-MM-DD HH:mm:ss Z");
   }
 
   static reservedKeys = [

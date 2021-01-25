@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
+const force = false;
 
 [
   'assets',
@@ -13,7 +14,6 @@ const fs = require('fs');
 });
 
 [
-  '.gitignore',
   'README.md',
   'index.js',
   'Procfile',
@@ -24,14 +24,21 @@ const fs = require('fs');
   'pages/notfound.html',
   'pages/list.html',
   'pages/form.html',
+  'pages/revision.html',
   'assets/app.css',
   'contents/index.json',
   'contents/home/1.md',
   'contents/about/1.md'
 ].forEach(filename => {
-  if (!fs.existsSync(filename)) {
+  if (force || !fs.existsSync(filename)) {
     fs.writeFileSync(filename,
       fs.readFileSync(`node_modules/flavour-wiki/data/${filename}`)
     );
-  }  
+  }
 });
+
+if (force || !fs.existsSync('.gitignore')) {
+  fs.writeFileSync('.gitignore',
+    fs.readFileSync('node_modules/flavour-wiki/data/gitignore.txt')
+  );
+}
