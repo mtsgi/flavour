@@ -16,12 +16,62 @@ module.exports = class Flavour {
     const vars = this;
 
     this.app.use('/assets', express.static('assets'));
+
     this.app.get('/', function (req, res) {
       const template = Flavour.getTemplate('home', { config: vars.config });
       Flavour.render(res, template, { ...vars, ...req });
     });
-    this.app.get('/:title', function (req, res) {
-      const template = Flavour.getTemplate(req.params.title, { config: vars.config });
+
+    this.app.get('/list', function (req, res) {
+      const indexObject = JSON.parse(fs.readFileSync('contents/index.json'));
+      const articleList = Object.entries(indexObject).map(c => {
+        return { ...c[1], key: c[0] };
+      });
+      const listTemplate = fs.readFileSync('pages/list.html');
+      const template = mustache.render(listTemplate.toString(), {
+        articleList
+      });
+      Flavour.render(res, template, { ...vars, ...req });
+    });
+
+    this.app.get('/new', function (req, res) {
+      const formTemplate = fs.readFileSync('pages/form.html');
+      const template = mustache.render(formTemplate.toString(), {
+        title: vars.config.dict.newArticle || 'New article',
+        buttonLabel: vars.config.dict.newArticleLabel || 'Create',
+        action: './new',
+        article: {
+          key: req.query.key || 'key',
+          title: vars.config.dict.defaultArticleTitle || 'Article Title',
+          body: vars.config.dict.defaultArticleBody || '*Write here body of the article*'
+        }
+      });
+      Flavour.render(res, template, { ...vars, ...req });
+    });
+
+    this.app.get('/edit', function (req, res) {
+      const key = req.query.key;
+      const indexObject = JSON.parse(fs.readFileSync('contents/index.json'));
+      const articleInfo = indexObject[key];
+      if (!articleInfo) Flavour.render(res, 'ERROR', { ...vars });
+
+      const formTemplate = fs.readFileSync('pages/form.html');
+      const template = mustache.render(formTemplate.toString(), {
+        title: vars.config.dict.editArticle || 'Edit article',
+        buttonLabel: vars.config.dict.editArticleLabel || 'Update',
+        action: './edit',
+        editMode: true,
+        article: {
+          key,
+          title: articleInfo.title,
+          body: fs.readFileSync(`contents/${key}/${articleInfo['lastModified']}.md`)
+        }
+      });
+      Flavour.render(res, template, { ...vars, ...req });
+    });
+
+    this.app.get('/:key', function (req, res) {
+      const template = Flavour.getTemplate(req.params.key, { config: vars.config });
       Flavour.render(res, template, { ...vars, ...req });
     });
   }
@@ -36,7 +86,7 @@ module.exports = class Flavour {
     const articleTemplate = fs.readFileSync('pages/article.html');
     return mustache.render(articleTemplate.toString(), {
       info: articleInfo,
-      body: marked(String(markdown), option.config?.markdown)
+      body: marked(String(markdown), option.config.markdown)
     });
   }
 

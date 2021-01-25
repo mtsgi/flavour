@@ -1,6 +1,17 @@
 {
   "home": {
     "title": "ようこそ！",
-    "lastModified": "1"
+    "lastModified": "1",
+    "tags": [
+      "メインページ",
+      "Flavour"
+    ]
+  },
+  "about": {
+    "title": "このWikiについて",
+    "lastModified": "1",
+    "tags": [
+      "Flavour"
+    ]
   }
 }

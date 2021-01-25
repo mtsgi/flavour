@@ -1,0 +1,16 @@
+<h1>記事一覧</h1>
+
+<ul>
+  {{ #articleList }}
+    <li>
+      記事：<a href="./{{ key }}">{{ title }}</a>
+      <br />
+      最終更新：{{ lastModified }}
+      <br />
+      タグ：
+      {{ #tags }}
+        <a href="./tag?q={{ . }}">{{ . }}</a>
+      {{ /tags }}
+    </li>
+  {{ /articleList }}
+</ul>
