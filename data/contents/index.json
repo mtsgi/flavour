@@ -2,6 +2,13 @@
   "home": {
     "title": "ようこそ！",
     "lastModified": "1",
+    "revisions": [
+      {
+        "title": "ようこそ！",
+        "time": "1",
+        "ipaddr": "0.0.0.0"
+      }
+    ],
     "tags": [
       "メインページ",
       "Flavour"
@@ -10,6 +17,13 @@
   "about": {
     "title": "このWikiについて",
     "lastModified": "1",
+    "revisions": [
+      {
+        "title": "このWikiについて",
+        "time": "1",
+        "ipaddr": "0.0.0.0"
+      }
+    ],
     "tags": [
       "Flavour"
     ]

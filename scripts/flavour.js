@@ -9,13 +9,17 @@ var _mustache = _interopRequireDefault(require("mustache"));
 
 var _marked = _interopRequireDefault(require("marked"));
 
+var _bodyParser = _interopRequireDefault(require("body-parser"));
+
+var _moment = _interopRequireDefault(require("moment"));
+
+var _class, _temp;
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -23,20 +27,24 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-module.exports = /*#__PURE__*/function () {
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+module.exports = (_temp = _class = /*#__PURE__*/function () {
   function Flavour(config) {
     var _this = this;
 
     _classCallCheck(this, Flavour);
 
     this.app = (0, _express.default)();
-    this.config = config; // eslint-disable-next-line no-undef
-
+    this.config = config;
     this.server = this.app.listen(process.env.PORT || 3000, function () {
       console.log('Flavour is listening to PORT:' + _this.server.address().port);
     });
     var vars = this;
     this.app.use('/assets', _express.default.static('assets'));
+    this.app.use(_bodyParser.default.urlencoded({
+      extended: true
+    }));
     this.app.get('/', function (req, res) {
       var template = Flavour.getTemplate('home', {
         config: _this.config
@@ -54,7 +62,8 @@ module.exports = /*#__PURE__*/function () {
       var listTemplate = _fs.default.readFileSync('pages/list.html');
 
       var template = _mustache.default.render(listTemplate.toString(), {
-        articleList: articleList
+        articleList: articleList,
+        Flavour: Flavour
       });
 
       Flavour.render(res, template, _objectSpread(_objectSpread({}, vars), req));
@@ -75,11 +84,41 @@ module.exports = /*#__PURE__*/function () {
 
       Flavour.render(res, template, _objectSpread(_objectSpread({}, vars), req));
     });
+    this.app.post('/new', function (req, res) {
+      res.setHeader('Content-Type', 'text/plain');
+      var params = req.body;
+      var indexObject = JSON.parse(_fs.default.readFileSync('contents/index.json'));
+
+      if (Flavour.reservedKeys.includes(params.key)) {
+        Flavour.renderError(res, "You cannot create ".concat(params.key, "."));
+      } else if (indexObject[params.key]) {
+        Flavour.renderError(res, "".concat(params.key, " already exists."));
+      } else {
+        var time = (0, _moment.default)().unix();
+        indexObject[params.key] = {
+          title: params.title,
+          lastModified: time,
+          revisions: [{
+            title: params.title,
+            time: time,
+            ipaddr: req.ip
+          }],
+          tags: []
+        };
+        if (!_fs.default.existsSync("contents/".concat(params.key))) _fs.default.mkdirSync("contents/".concat(params.key));
+
+        _fs.default.writeFileSync("contents/".concat(params.key, "/").concat(time, ".md"), params.body);
+
+        _fs.default.writeFileSync("contents/index.json", JSON.stringify(indexObject, null, 2));
+
+        res.redirect("./".concat(req.body.key));
+      }
+    });
     this.app.get('/edit', function (req, res) {
       var key = req.query.key;
       var indexObject = JSON.parse(_fs.default.readFileSync('contents/index.json'));
       var articleInfo = indexObject[key];
-      if (!articleInfo) Flavour.render(res, 'ERROR', _objectSpread({}, vars));
+      if (!articleInfo) Flavour.renderError(res, "".concat(params.key, " is not found."));
 
       var formTemplate = _fs.default.readFileSync('pages/form.html');
 
@@ -99,7 +138,7 @@ module.exports = /*#__PURE__*/function () {
     });
     this.app.get('/:key', function (req, res) {
       var template = Flavour.getTemplate(req.params.key, {
-        config: vars.config
+        config: _this.config
       });
       Flavour.render(res, template, _objectSpread(_objectSpread({}, vars), req));
     });
@@ -138,7 +177,17 @@ module.exports = /*#__PURE__*/function () {
 
       res.send(renderTemplate);
     }
+  }, {
+    key: "renderError",
+    value: function renderError(res, message) {
+      res.send(message);
+    }
+  }, {
+    key: "formatTime",
+    value: function formatTime(time) {
+      return (0, _moment.default)(time).format("YYYY-MM-DD HH:mm:ss Z");
+    }
   }]);
 
   return Flavour;
-}();
+}(), _defineProperty(_class, "reservedKeys", ['new', 'edit', 'list', 'revision']), _temp);

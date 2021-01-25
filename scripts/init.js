@@ -13,12 +13,14 @@ const fs = require('fs');
 });
 
 [
+  '.gitignore',
   'README.md',
   'index.js',
   'Procfile',
   'flavour.config.js',
   'pages/app.html',
   'pages/article.html',
+  'pages/error.html',
   'pages/notfound.html',
   'pages/list.html',
   'pages/form.html',

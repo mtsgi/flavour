@@ -5,6 +5,7 @@ module.exports = {
     ]
   ],
   "plugins": [
-    "@babel/plugin-transform-spread"
+    "@babel/plugin-transform-spread",
+    "@babel/plugin-proposal-class-properties"
   ]
 }
