@@ -124,7 +124,8 @@ main {
       color: #909090; }
 
 .articles-tags {
-  display: flex; }
+  display: flex;
+  flex-wrap: wrap; }
   .articles-tags > a {
     background: #f0f0f0;
     color: #404040;
