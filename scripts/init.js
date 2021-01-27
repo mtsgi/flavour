@@ -8,7 +8,8 @@ const force = false;
   'pages',
   'contents',
   'contents/home',
-  'contents/about'
+  'contents/about',
+  'contents/practice'
 ].forEach(dir => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir);
 });
