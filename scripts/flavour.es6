@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 
+// Flavour | The Easiest Wiki System
+// MIT License
+// Copyright (c) 2021 mtsgi
+
 import express from 'express';
 import fs from 'fs';
 import mustache from 'mustache';
@@ -227,6 +231,6 @@ module.exports = class Flavour {
   }
 
   static reservedKeys = [
-    'new', 'edit', 'list', 'revision'
+    '', 'new', 'edit', 'list', 'revision'
   ]
 };
