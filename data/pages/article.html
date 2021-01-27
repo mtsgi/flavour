@@ -19,6 +19,15 @@
   <span>更新：{{ formattedTime }}</span>
 </div>
 
+<div class="articles-tags">
+  {{ #article.tags }}
+    <a href="/tag?q={{ . }}">
+      <i class="gg-tag"></i>
+      {{ . }}
+    </a>
+  {{ /article.tags }}
+</div>
+
 <hr />
 
 {{{ body }}}

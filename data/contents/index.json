@@ -27,5 +27,19 @@
     "tags": [
       "Flavour"
     ]
+  },
+  "practice": {
+    "title": "練習用ページ",
+    "lastModified": 1,
+    "revisions": [
+      {
+        "title": "練習用ページ",
+        "time": 1,
+        "ipaddr": "0.0.0.0"
+      }
+    ],
+    "tags": [
+      "Flavour"
+    ]
   }
 }

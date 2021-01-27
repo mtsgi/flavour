@@ -1,16 +1,20 @@
-<h1>記事一覧</h1>
+<h1>{{ pageTitle }}</h1>
 
-<ul>
+<ul class="articles">
   {{ #articleList }}
     <li>
-      記事：<a href="/{{ key }}">{{ title }}</a>
-      <br />
-      最終更新：{{ lastModified }}
-      <br />
-      タグ：
-      {{ #tags }}
-        <a href="/tag?q={{ . }}">{{ . }}</a>
-      {{ /tags }}
+      <a href="/{{ key }}">{{ title }}</a> {{ key }}
+      <div>
+        最終更新：{{ lastModified }}
+      </div>
+      <div class="articles-tags">
+        {{ #tags }}
+          <a href="/tag?q={{ . }}">
+            <i class="gg-tag"></i>
+            {{ . }}
+          </a>
+        {{ /tags }}
+      </div>
     </li>
   {{ /articleList }}
 </ul>
