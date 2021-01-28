@@ -14,6 +14,7 @@ module.exports = class Flavour {
     this.config = config;
     this.server = this.app.listen(process.env.PORT || 3000, () => {
       console.log('Flavour is listening to PORT:' + this.server.address().port);
+      console.log(`http://localhost:${this.server.address().port}/`);
     });
     const vars = this;
 
@@ -27,13 +28,31 @@ module.exports = class Flavour {
 
     this.app.get('/list', (req, res) => {
       const indexObject = JSON.parse(fs.readFileSync('contents/index.json'));
-      const articleList = Object.entries(indexObject).map(c => {
-        return { ...c[1], key: c[0] };
+      const articleList = Object.entries(indexObject).map(([key, val]) => {
+        return { ...val, key }
       });
       const listTemplate = fs.readFileSync('pages/list.html');
       const template = mustache.render(listTemplate.toString(), {
+        pageTitle: this.config.dict.allArticles || 'List of all articles',
         articleList,
         Flavour
+      });
+      Flavour.render(res, template, { ...vars, ...req });
+    });
+
+    this.app.get('/tag', (req, res) => {
+      const tagName = req.query.q;
+      const indexObject = JSON.parse(fs.readFileSync('contents/index.json'));
+      const articleList = Object.entries(indexObject).filter(([key, val]) => {
+        return val.tags.includes(tagName)
+      }).map(([key, val]) => {
+        return { ...val, key };
+      });
+      const listTemplate = fs.readFileSync('pages/list.html');
+      const template = mustache.render(listTemplate.toString(), {
+        pageTitle: `Tag: ${tagName}`,
+        tagName,
+        articleList
       });
       Flavour.render(res, template, { ...vars, ...req });
     });
@@ -47,7 +66,8 @@ module.exports = class Flavour {
         article: {
           key: req.query.key || 'key',
           title: this.config.dict.defaultArticleTitle || 'Article Title',
-          body: this.config.dict.defaultArticleBody || '*Write here body of the article*'
+          body: this.config.dict.defaultArticleBody || '*Write here body of the article*',
+          tags: ''
         }
       });
       Flavour.render(res, template, { ...vars, ...req }, { rerender: false });
@@ -75,7 +95,7 @@ module.exports = class Flavour {
               ipaddr: req.ip
             }
           ],
-          tags: []
+          tags: params.tags.split(',').map(t => t.trim())
         };
         if (!fs.existsSync(`contents/${params.key}`)) fs.mkdirSync(`contents/${params.key}`);
         fs.writeFileSync(`contents/${params.key}/${time}.md`, params.body);
@@ -99,7 +119,8 @@ module.exports = class Flavour {
         article: {
           key,
           title: articleInfo.title,
-          body: fs.readFileSync(`contents/${key}/${articleInfo['lastModified']}.md`)
+          body: fs.readFileSync(`contents/${key}/${articleInfo['lastModified']}.md`),
+          tags: articleInfo.tags.join(', ')
         }
       });
       Flavour.render(res, template, { ...vars, ...req }, { rerender: false });
@@ -117,7 +138,8 @@ module.exports = class Flavour {
         indexObject[params.key] = {
           ...indexObject[params.key],
           title: params.title,
-          lastModified: time
+          lastModified: time,
+          tags: params.tags.split(',').map(t => t.trim())
         };
         indexObject[params.key].revisions.push({
           title: params.title,
@@ -179,6 +201,7 @@ module.exports = class Flavour {
         mustache.render(articleTemplate.toString(), {
         key,
         info: revisionInfo,
+        article: articleInfo,
         formattedTime: Flavour.formatTime(timestamp),
         body: marked(String(markdown), option.config.markdown),
         revision: option.revision || false

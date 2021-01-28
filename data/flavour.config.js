@@ -10,6 +10,7 @@ module.exports = {
     defaultArticleBody: '*ここに本文を記述してください*',
     editArticle: '記事編集',
     editArticleLabel: '更新する',
+    allArticles: 'すべての記事'
   },
   markdown: {
     breaks: true,

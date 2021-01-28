@@ -19,6 +19,18 @@ var _class, _temp;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -41,6 +53,7 @@ module.exports = (_temp = _class = /*#__PURE__*/function () {
     this.config = config;
     this.server = this.app.listen(process.env.PORT || 3000, function () {
       console.log('Flavour is listening to PORT:' + _this.server.address().port);
+      console.log("http://localhost:".concat(_this.server.address().port, "/"));
     });
     var vars = this;
     this.app.use('/assets', _express.default.static('assets'));
@@ -55,17 +68,51 @@ module.exports = (_temp = _class = /*#__PURE__*/function () {
     });
     this.app.get('/list', function (req, res) {
       var indexObject = JSON.parse(_fs.default.readFileSync('contents/index.json'));
-      var articleList = Object.entries(indexObject).map(function (c) {
-        return _objectSpread(_objectSpread({}, c[1]), {}, {
-          key: c[0]
+      var articleList = Object.entries(indexObject).map(function (_ref) {
+        var _ref2 = _slicedToArray(_ref, 2),
+            key = _ref2[0],
+            val = _ref2[1];
+
+        return _objectSpread(_objectSpread({}, val), {}, {
+          key: key
         });
       });
 
       var listTemplate = _fs.default.readFileSync('pages/list.html');
 
       var template = _mustache.default.render(listTemplate.toString(), {
+        pageTitle: _this.config.dict.allArticles || 'List of all articles',
         articleList: articleList,
         Flavour: Flavour
+      });
+
+      Flavour.render(res, template, _objectSpread(_objectSpread({}, vars), req));
+    });
+    this.app.get('/tag', function (req, res) {
+      var tagName = req.query.q;
+      var indexObject = JSON.parse(_fs.default.readFileSync('contents/index.json'));
+      var articleList = Object.entries(indexObject).filter(function (_ref3) {
+        var _ref4 = _slicedToArray(_ref3, 2),
+            key = _ref4[0],
+            val = _ref4[1];
+
+        return val.tags.includes(tagName);
+      }).map(function (_ref5) {
+        var _ref6 = _slicedToArray(_ref5, 2),
+            key = _ref6[0],
+            val = _ref6[1];
+
+        return _objectSpread(_objectSpread({}, val), {}, {
+          key: key
+        });
+      });
+
+      var listTemplate = _fs.default.readFileSync('pages/list.html');
+
+      var template = _mustache.default.render(listTemplate.toString(), {
+        pageTitle: "Tag: ".concat(tagName),
+        tagName: tagName,
+        articleList: articleList
       });
 
       Flavour.render(res, template, _objectSpread(_objectSpread({}, vars), req));
@@ -80,7 +127,8 @@ module.exports = (_temp = _class = /*#__PURE__*/function () {
         article: {
           key: req.query.key || 'key',
           title: _this.config.dict.defaultArticleTitle || 'Article Title',
-          body: _this.config.dict.defaultArticleBody || '*Write here body of the article*'
+          body: _this.config.dict.defaultArticleBody || '*Write here body of the article*',
+          tags: ''
         }
       });
 
@@ -107,7 +155,9 @@ module.exports = (_temp = _class = /*#__PURE__*/function () {
             time: time,
             ipaddr: req.ip
           }],
-          tags: []
+          tags: params.tags.split(',').map(function (t) {
+            return t.trim();
+          })
         };
         if (!_fs.default.existsSync("contents/".concat(params.key))) _fs.default.mkdirSync("contents/".concat(params.key));
 
@@ -134,7 +184,8 @@ module.exports = (_temp = _class = /*#__PURE__*/function () {
         article: {
           key: key,
           title: articleInfo.title,
-          body: _fs.default.readFileSync("contents/".concat(key, "/").concat(articleInfo['lastModified'], ".md"))
+          body: _fs.default.readFileSync("contents/".concat(key, "/").concat(articleInfo['lastModified'], ".md")),
+          tags: articleInfo.tags.join(', ')
         }
       });
 
@@ -153,7 +204,10 @@ module.exports = (_temp = _class = /*#__PURE__*/function () {
         var time = (0, _moment.default)().unix();
         indexObject[params.key] = _objectSpread(_objectSpread({}, indexObject[params.key]), {}, {
           title: params.title,
-          lastModified: time
+          lastModified: time,
+          tags: params.tags.split(',').map(function (t) {
+            return t.trim();
+          })
         });
         indexObject[params.key].revisions.push({
           title: params.title,
@@ -224,6 +278,7 @@ module.exports = (_temp = _class = /*#__PURE__*/function () {
       return _twemoji.default.parse(_mustache.default.render(articleTemplate.toString(), {
         key: key,
         info: revisionInfo,
+        article: articleInfo,
         formattedTime: Flavour.formatTime(timestamp),
         body: (0, _marked.default)(String(markdown), option.config.markdown),
         revision: option.revision || false

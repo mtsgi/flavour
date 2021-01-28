@@ -8,7 +8,8 @@ const force = false;
   'pages',
   'contents',
   'contents/home',
-  'contents/about'
+  'contents/about',
+  'contents/practice'
 ].forEach(dir => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir);
 });
@@ -28,7 +29,8 @@ const force = false;
   'assets/app.css',
   'contents/index.json',
   'contents/home/1.md',
-  'contents/about/1.md'
+  'contents/about/1.md',
+  'contents/practice/1.md'
 ].forEach(filename => {
   if (force || !fs.existsSync(filename)) {
     fs.writeFileSync(filename,
