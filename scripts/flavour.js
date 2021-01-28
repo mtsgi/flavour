@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+// Flavour | The Easiest Wiki System
+// MIT License
+// Copyright (c) 2021 mtsgi
 "use strict";
 
 var _express = _interopRequireDefault(require("express"));
@@ -313,4 +316,4 @@ module.exports = (_temp = _class = /*#__PURE__*/function () {
   }]);
 
   return Flavour;
-}(), _defineProperty(_class, "reservedKeys", ['new', 'edit', 'list', 'revision']), _temp);
+}(), _defineProperty(_class, "reservedKeys", ['', 'new', 'edit', 'list', 'revision']), _temp);
