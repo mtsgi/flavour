@@ -1,3 +1,4 @@
+@charset "UTF-8";
 @import url("https://cdn.jsdelivr.net/npm/@exampledev/new.css@1/new.min.css");
 @import url("https://cdn.jsdelivr.net/npm/css.gg/icons/all.css");
 :root {
@@ -149,3 +150,8 @@ footer {
   text-align: center;
   background: #f0f0f0;
   color: #a0a0a0; }
+  footer .footer-links a:not(:first-child):before {
+    content: "｜";
+    color: #a0a0a0;
+    margin: 0 4px;
+    text-decoration: none; }

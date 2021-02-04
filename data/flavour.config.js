@@ -15,5 +15,23 @@ module.exports = {
   markdown: {
     breaks: true,
     gfm: true
-  }
+  },
+  links: [
+    {
+      href: "/",
+      label: "トップページ"
+    },
+    {
+      href: "/snapshot",
+      label: "現在のスナップショットを取得"
+    },
+    {
+      href: "https://github.com/mtsgi/flavour",
+      label: "Flavour GitHub repo"
+    },
+    {
+      href: "https://www.npmjs.com/package/flavour-wiki",
+      label: "flavour-wiki npm package"
+    }
+  ]
 };

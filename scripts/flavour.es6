@@ -11,6 +11,7 @@ import marked from 'marked';
 import bodyParser from 'body-parser';
 import moment from 'moment';
 import twemoji from 'twemoji';
+import archiver from 'archiver';
 
 module.exports = class Flavour {
   constructor(config) {
@@ -42,6 +43,14 @@ module.exports = class Flavour {
         Flavour
       });
       Flavour.render(res, template, { ...vars, ...req });
+    });
+
+    this.app.get('/snapshot', async (req, res) => {
+      const time = String(moment().unix());
+      await Flavour.snapshot(time);
+      await res.download(`${time}.zip`, null, () => {
+        fs.unlinkSync(`${time}.zip`);
+      });
     });
 
     this.app.get('/tag', (req, res) => {
@@ -187,6 +196,18 @@ module.exports = class Flavour {
       const template = Flavour.getTemplate(req.params.key, { config: this.config });
       Flavour.render(res, template, { ...vars, ...req });
     });
+  }
+
+  static async snapshot(time) {
+    const filename = `${time}.zip`;
+    const archive = archiver.create('zip', {
+      zlib: { level: 9 }
+    });
+    const output = fs.createWriteStream(filename);
+    archive.pipe(output);
+    archive.glob('contents/**/*');
+    await archive.finalize();
+    return;
   }
 
   static getTemplate(key, option = {

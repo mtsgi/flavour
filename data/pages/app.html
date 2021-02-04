@@ -39,6 +39,11 @@
     <p>{{ config.title }} | {{ config.description }}</p>
     <p>Built with <a href="https://github.com/mtsgi/flavour" target="_blank" rel="noopener noreferrer">Flavour</a>
     </p>
+    <p class="footer-links">
+      {{ #config.links }}
+        <a href="{{ href }}">{{ label }}</a>
+      {{ /config.links }}
+    </p>
   </footer>
 </body>
 
