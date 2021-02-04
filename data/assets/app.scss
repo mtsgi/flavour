@@ -186,4 +186,11 @@ footer {
   text-align: center;
   background: #f0f0f0;
   color: #a0a0a0;
+  .footer-links a {
+    &:not(:first-child):before {
+      content: "｜";
+      color: #a0a0a0;
+      margin: 0 4px;text-decoration: none;
+    }
+  }
 }

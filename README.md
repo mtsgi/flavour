@@ -1,4 +1,6 @@
-![Flavour](resources/banner.png "Flavour | The Easiest Wiki System")
+# Flavour
+
+![Flavour](https://raw.githubusercontent.com/mtsgi/flavour/master/resources/banner.png "Flavour | The Easiest Wiki System")
 
 ![npm](https://img.shields.io/npm/v/flavour-wiki?style=flat-square)
 ![GitHub top language](https://img.shields.io/github/languages/top/mtsgi/flavour?style=flat-square)
@@ -6,7 +8,9 @@
 ![npm](https://img.shields.io/npm/dt/flavour-wiki?style=flat-square)
 ![GitHub](https://img.shields.io/github/license/mtsgi/flavour?style=flat-square)
 
-Flavourは、Node.js向けのモダンで拡張性に富んだオープンソースのWikiフレームワークです。
+**Flavour is a modern, extensible, open source wiki framework for Node.js.**
+
+**Flavourは、Node.js向けのモダンで拡張性に富んだオープンソースのWikiフレームワークです。**
 
 ## Getting Started
 
