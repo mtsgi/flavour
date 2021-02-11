@@ -240,6 +240,35 @@ module.exports = (_temp = _class = class Flavour {
       Flavour.render(res, template, { ...vars,
         ...req
       });
+    }); // Flavour APIs
+
+    this.app.get('/api/index', (req, res) => {
+      const indexObject = JSON.parse(_fs.default.readFileSync('contents/index.json'));
+      const articleList = Object.entries(indexObject).map(([key, val]) => {
+        return { ...val,
+          key
+        };
+      });
+      res.json({ ...articleList,
+        status: 200
+      });
+    });
+    this.app.get('/api/:key', (req, res) => {
+      const key = req.params.key;
+      const indexObject = JSON.parse(_fs.default.readFileSync('contents/index.json'));
+      const articleInfo = indexObject[key];
+      if (!articleInfo) res.json({
+        status: 404
+      });else {
+        const timestamp = articleInfo['lastModified'];
+
+        const body = _fs.default.readFileSync(`contents/${key}/${timestamp}.md`);
+
+        res.json({ ...articleInfo,
+          body: String(body),
+          status: 200
+        });
+      }
     });
   }
 
